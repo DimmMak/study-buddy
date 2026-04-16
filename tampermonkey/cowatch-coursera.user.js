@@ -1,12 +1,14 @@
 // ==UserScript==
-// @name         ClaudeNotes Cowatch — Coursera Transcript Capture
-// @namespace    https://github.com/DimmMak/claudenotes
-// @version      1.0.0
-// @description  Captures live Coursera lecture transcripts to localStorage so the /cowatch skill can read them on demand.
+// @name         cowatch — Coursera
+// @namespace    https://github.com/DimmMak/cowatch
+// @version      1.1.0
+// @description  Captures live Coursera lecture transcripts to localStorage so the /cowatch Claude skill can read them on demand. v1.1 tries 11 selectors to handle Coursera's frequent CSS changes + third-party transcript scripts.
 // @author       Danny (DimmMak)
 // @match        https://www.coursera.org/learn/*
 // @grant        none
 // @run-at       document-idle
+// @updateURL    https://raw.githubusercontent.com/DimmMak/cowatch/main/tampermonkey/cowatch-coursera.user.js
+// @downloadURL  https://raw.githubusercontent.com/DimmMak/cowatch/main/tampermonkey/cowatch-coursera.user.js
 // ==/UserScript==
 
 (function() {
@@ -47,7 +49,7 @@
         });
     });
 
-    // ─── Capture logic ─────────────────────────────────────────────
+    // ─── Helpers ───────────────────────────────────────────────────
     function getVideoCurrentTime() {
         const video = document.querySelector('video');
         if (!video) return 'n/a';
@@ -55,11 +57,61 @@
         return `${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
     }
 
-    function captureTranscript() {
-        // Coursera renders each transcript phrase with a data-test="phrase" attribute
-        const phrases = document.querySelectorAll('[data-test="phrase"]');
+    // 11 selectors covering Coursera native + popular third-party transcript scripts.
+    // Order matters: most specific first.
+    const SELECTORS = [
+        '[data-test="phrase"]',
+        '[data-testid="phrase"]',
+        '[data-track-component="phrase"]',
+        '.rc-Phrase',
+        '.transcript-phrase',
+        '[class*="phrase" i]',
+        '[class*="caption" i]',
+        '[class*="transcript-text" i]',
+        '[class*="TranscriptText"]',
+        '[class*="cue" i]',
+        'span[role="button"][class*="text"]'
+    ];
+
+    function findPhrases() {
+        for (const sel of SELECTORS) {
+            try {
+                const found = document.querySelectorAll(sel);
+                // Need at least 4 elements to avoid false positives on random spans.
+                if (found.length > 3) {
+                    return { phrases: found, selector: sel };
+                }
+            } catch(e) { /* invalid selector for older browsers, skip */ }
+        }
+        return { phrases: [], selector: null };
+    }
+
+    function findActivePhrase() {
+        // Try common active-state class names
+        const activeSelectors = [
+            '.rc-Phrase--active',
+            '[class*="active" i]',
+            '[class*="current" i]',
+            '[class*="playing" i]',
+            '[aria-current="true"]'
+        ];
+        for (const sel of activeSelectors) {
+            try {
+                const active = document.querySelector(sel);
+                if (active && active.textContent.trim().length < 200) {
+                    return active.textContent.trim();
+                }
+            } catch(e) {}
+        }
+        return '';
+    }
+
+    // ─── Main capture function ─────────────────────────────────────
+    function capture() {
+        const { phrases, selector } = findPhrases();
+
         if (!phrases.length) {
-            indicator.textContent = '📺 Cowatch: no transcript visible';
+            indicator.textContent = '📺 no transcript (open transcript tab?)';
             indicator.style.color = '#fbbf24';
             return;
         }
@@ -69,12 +121,7 @@
             .filter(Boolean)
             .join(' ');
 
-        // Active phrase is the one currently being spoken — Coursera highlights it.
-        // Selectors vary; try a couple.
-        const active = document.querySelector(
-            '[data-test="phrase"].rc-Phrase--active, [data-test="phrase"][class*="active"]'
-        );
-        const activeText = active ? active.textContent.trim() : '';
+        const activeText = findActivePhrase();
 
         const meta = {
             url: location.href,
@@ -83,7 +130,8 @@
             videoTime: getVideoCurrentTime(),
             activeText: activeText,
             charCount: fullText.length,
-            phraseCount: phrases.length
+            phraseCount: phrases.length,
+            selector: selector
         };
 
         localStorage.setItem(STORAGE_KEY, fullText);
@@ -94,8 +142,8 @@
     }
 
     // ─── Start the loop ────────────────────────────────────────────
-    setInterval(captureTranscript, SAMPLE_INTERVAL_MS);
-    captureTranscript();
+    setInterval(capture, SAMPLE_INTERVAL_MS);
+    capture();
 
-    console.log('[Cowatch] Tampermonkey script loaded. Sampling every 3s.');
+    console.log('[Cowatch v1.1] loaded. Sampling every 3s with 11 selector fallbacks.');
 })();
