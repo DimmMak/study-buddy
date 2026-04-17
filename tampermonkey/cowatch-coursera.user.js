@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         cowatch — Coursera
+// @name         Transcript Capture — Coursera
 // @namespace    https://github.com/DimmMak/cowatch
-// @version      1.1.0
-// @description  Captures live Coursera lecture transcripts to localStorage so the /cowatch Claude skill can read them on demand. v1.1 tries 11 selectors to handle Coursera's frequent CSS changes + third-party transcript scripts.
+// @version      1.2.0
+// @description  Captures live Coursera lecture transcripts to localStorage so Claude skills (/courserafied, /cowatch, etc.) can read them on demand. v1.2 renames display to skill-agnostic "Transcript". v1.1 tried 11 selectors.
 // @author       Danny (DimmMak)
 // @match        https://www.coursera.org/learn/*
 // @grant        none
@@ -36,7 +36,7 @@
         cursor: pointer;
         user-select: none;
     `;
-    indicator.textContent = '📺 Cowatch: starting…';
+    indicator.textContent = '📜 Transcript: starting…';
     indicator.title = 'Click to copy current transcript to clipboard';
     document.body.appendChild(indicator);
 
@@ -111,7 +111,7 @@
         const { phrases, selector } = findPhrases();
 
         if (!phrases.length) {
-            indicator.textContent = '📺 no transcript (open transcript tab?)';
+            indicator.textContent = '📜 no transcript (open transcript tab?)';
             indicator.style.color = '#fbbf24';
             return;
         }
@@ -137,7 +137,7 @@
         localStorage.setItem(STORAGE_KEY, fullText);
         localStorage.setItem(META_KEY, JSON.stringify(meta));
 
-        indicator.textContent = `📺 Cowatch: ${fullText.length}c | t=${meta.videoTime}`;
+        indicator.textContent = `📜 Transcript: ${fullText.length}c | t=${meta.videoTime}`;
         indicator.style.color = '#4ade80';
     }
 
@@ -145,5 +145,5 @@
     setInterval(capture, SAMPLE_INTERVAL_MS);
     capture();
 
-    console.log('[Cowatch v1.1] loaded. Sampling every 3s with 11 selector fallbacks.');
+    console.log('[Transcript v1.2] loaded. Sampling every 3s with 11 selector fallbacks.');
 })();
