@@ -1,4 +1,4 @@
-# 📺👥 cowatch
+# 📺👥 study-buddy
 
 > **Live study buddy for Claude Code.** Watches lectures with you in your browser, reacts in real-time to what's on screen, and helps you capture the right notes at the right moments.
 
@@ -42,7 +42,7 @@ A Claude `.skill` + Tampermonkey userscript pipeline. Open source, MIT licensed.
 
 ### 2. Install the userscript
 - Click the Tampermonkey icon → **Create a new script**
-- Paste contents of [`tampermonkey/cowatch-coursera.user.js`](tampermonkey/cowatch-coursera.user.js)
+- Paste contents of [`tampermonkey/study-buddy-coursera.user.js`](tampermonkey/study-buddy-coursera.user.js)
 - **Cmd/Ctrl + S** to save
 - Open any Coursera lecture
 - You should see a green badge in the bottom-right: `📺 Cowatch: 1432c | t=2:14`
@@ -52,19 +52,19 @@ Drop [`SKILL.md`](SKILL.md) into your Claude skills directory:
 
 ```bash
 # macOS / Linux
-mkdir -p ~/.claude/skills/cowatch
-curl -o ~/.claude/skills/cowatch/SKILL.md https://raw.githubusercontent.com/DimmMak/cowatch/main/SKILL.md
+mkdir -p ~/.claude/skills/study-buddy
+curl -o ~/.claude/skills/study-buddy/SKILL.md https://raw.githubusercontent.com/DimmMak/study-buddy/main/SKILL.md
 
 # Or just clone the repo
-git clone https://github.com/DimmMak/cowatch.git ~/.claude/skills/cowatch-repo
-ln -s ~/.claude/skills/cowatch-repo/SKILL.md ~/.claude/skills/cowatch/SKILL.md
+git clone https://github.com/DimmMak/study-buddy.git ~/.claude/skills/study-buddy-repo
+ln -s ~/.claude/skills/study-buddy-repo/SKILL.md ~/.claude/skills/study-buddy/SKILL.md
 ```
 
 ### 4. Use it
 In any Claude Code session:
 
 ```
-/cowatch i'm watching, follow along
+/study-buddy i'm watching, follow along
 ```
 
 ---
@@ -90,8 +90,8 @@ Talk to cowatch in plain English. It maps your words to actions:
 
 | Site | Status | Script |
 |---|---|---|
-| ✅ Coursera | Stable | [`cowatch-coursera.user.js`](tampermonkey/cowatch-coursera.user.js) |
-| ✅ YouTube | Stable | [`cowatch-youtube.user.js`](tampermonkey/cowatch-youtube.user.js) |
+| ✅ Coursera | Stable | [`cowatch-coursera.user.js`](tampermonkey/study-buddy-coursera.user.js) |
+| ✅ YouTube | Stable | [`cowatch-youtube.user.js`](tampermonkey/study-buddy-youtube.user.js) |
 | 🟡 Udemy | PRs welcome | — |
 | 🟡 edX | PRs welcome | — |
 | 🟡 Vimeo | PRs welcome | — |
@@ -133,7 +133,7 @@ The combination of all four is what makes cowatch novel: **it watches with you, 
      localStorage.cowatch_meta         = { url, title, videoTime, activeText, ... }
 
 4. When you cue Claude with "look", "thoughts?", etc.:
-   The /cowatch skill executes JavaScript via Claude in Chrome MCP
+   The /study-buddy skill executes JavaScript via Claude in Chrome MCP
    to read those localStorage keys directly. Clean text, no OCR.
 
 5. Claude reacts based on transcript + your repo context.

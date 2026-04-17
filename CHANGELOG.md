@@ -10,13 +10,13 @@
   - Proactive callout system with frequency cap (max 1 per ~5 chunks)
   - End-of-lecture flow generates ready-to-paste capture commands
 
-- **`tampermonkey/cowatch-coursera.user.js`** — Userscript for Coursera lectures
+- **`tampermonkey/study-buddy-coursera.user.js`** — Userscript for Coursera lectures
   - Auto-detects transcript via `[data-test="phrase"]` selector
   - Captures full text + active phrase + video timestamp every 3 seconds
   - Floating green badge UI with click-to-copy
   - Writes to `localStorage` (zero network calls)
 
-- **`tampermonkey/cowatch-youtube.user.js`** — Userscript for YouTube videos
+- **`tampermonkey/study-buddy-youtube.user.js`** — Userscript for YouTube videos
   - Captures via `ytd-transcript-segment-renderer` selector
   - Requires user to manually open transcript panel ("..." menu → Show transcript)
   - Same storage schema as Coursera variant

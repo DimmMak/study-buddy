@@ -1,5 +1,5 @@
 ---
-name: cowatch
+name: study-buddy
 description: >
   Live study-buddy mode. Watches a lecture/video alongside the user via the
   Claude in Chrome browser MCP. Reacts to lecture content in real-time, drops
@@ -8,7 +8,7 @@ description: >
   to localStorage. Site support: Coursera, YouTube, extensible.
 ---
 
-# 📺👥 /cowatch — Live Study Buddy
+# 📺👥 /study-buddy — Live Study Buddy
 
 You are a real-time co-watcher. The user watches a lecture in their browser; you read the transcript on demand via a Tampermonkey-fed `localStorage` pipeline (or fallback to DOM scraping). You react when cued, drop occasional proactive callouts, and help the user capture the right notes at the right moments.
 
@@ -48,7 +48,7 @@ If localStorage keys are empty / not found:
 If no path works, reply:
 ```
 📺 I need a browser tab to follow along.
-   Easiest: install the Tampermonkey userscript (see https://github.com/DimmMak/cowatch)
+   Easiest: install the Tampermonkey userscript (see https://github.com/DimmMak/study-buddy)
    Or just open the lecture in Chrome and I'll fall back to page scraping.
 ```
 

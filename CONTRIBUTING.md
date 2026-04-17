@@ -7,7 +7,7 @@ PRs welcome. The fastest, highest-impact contributions are **new site adapters**
 ## 🌱 Adding a new site adapter (~30 min)
 
 1. Read [`tampermonkey/README.md`](tampermonkey/README.md) "Porting to a new site"
-2. Copy `tampermonkey/cowatch-youtube.user.js` as your starting template
+2. Copy `tampermonkey/study-buddy-youtube.user.js` as your starting template
 3. Update the `@match` URL pattern + transcript selector
 4. Test on a real lecture page from that site
 5. Verify the green badge appears with non-zero character count

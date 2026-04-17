@@ -51,7 +51,7 @@ The `cowatch_meta` shape:
 }
 ```
 
-The `/cowatch` skill reads these via:
+The `/study-buddy` skill reads these via:
 
 ```js
 const meta = JSON.parse(localStorage.getItem('cowatch_meta') || '{}');
@@ -71,7 +71,7 @@ Use `cowatch-youtube.user.js` as your template (it's the most general).
 
 ### 2. Update the script header
 ```js
-// @name         cowatch — {Site} Transcript Capture
+// @name         study-buddy — {Site} Transcript Capture
 // @match        https://www.{site}.com/{lecture-path}*
 ```
 
