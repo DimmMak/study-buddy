@@ -1,5 +1,6 @@
 ---
 name: study-buddy
+domain: learning
 description: >
   Live study-buddy mode. Watches a lecture/video alongside the user via the
   Claude in Chrome browser MCP. Reacts to lecture content in real-time, drops
