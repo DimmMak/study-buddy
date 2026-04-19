@@ -22,6 +22,13 @@ capabilities:
   cannot:
     - "modify course content retroactively"
     - "replace live transcripts"
+unix_contract:
+  data_format: "markdown"
+  schema_version: "0.1.0"
+  stdin_support: true
+  stdout_format: "markdown"
+  composable_with:
+    - "courserafied"
 ---
 
 # 📺👥 /study-buddy — Live Study Buddy
