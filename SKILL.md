@@ -7,6 +7,21 @@ description: >
   connections to existing notes, suggests captures, quizzes mid-stream.
   Designed to pair with a Tampermonkey userscript that pipes clean transcripts
   to localStorage. Site support: Coursera, YouTube, extensible.
+  NOT for: post-lecture note ingestion (use courserafied).
+  NOT for: creating study materials from scratch (use courserafied).
+  NOT for: non-lecture learning (just ask Claude directly).
+capabilities:
+  reads:
+    - "browser MCP (live lecture content)"
+    - "courses/*/"
+  writes:
+    - "courses/{course}/STUDY-LOG.md"
+  calls:
+    - "Claude in Chrome MCP"
+    - "courserafied (for ingestion handoff)"
+  cannot:
+    - "modify course content retroactively"
+    - "replace live transcripts"
 ---
 
 # 📺👥 /study-buddy — Live Study Buddy
