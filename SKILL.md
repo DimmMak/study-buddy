@@ -1,5 +1,6 @@
 ---
 name: study-buddy
+version: 0.2.0
 domain: learning
 description: >
   Live study-buddy mode. Watches a lecture/video alongside the user via the
