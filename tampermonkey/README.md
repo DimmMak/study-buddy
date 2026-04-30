@@ -9,7 +9,7 @@ Userscripts that capture live lecture transcripts to `localStorage` so the [`cow
 | Script | Site | Status | Notes |
 |---|---|---|---|
 | [`cowatch-coursera.user.js`](cowatch-coursera.user.js) | coursera.org/learn/* | ✅ Stable | Auto-detects transcript |
-| [`cowatch-youtube.user.js`](cowatch-youtube.user.js) | youtube.com/watch* | ✅ Stable | User must open transcript panel ("..." menu → Show transcript) |
+| [`cowatch-youtube.user.js`](cowatch-youtube.user.js) | youtube.com/watch* | ✅ Stable (v1.2) | Auto-opens transcript panel; uses YT's 2026 `transcript-segment-view-model` selector with legacy fallback |
 
 PRs welcome for: Udemy, edX, Vimeo, Khan Academy, MIT OCW, anywhere with a transcript pane.
 
@@ -79,10 +79,12 @@ Use `cowatch-youtube.user.js` as your template (it's the most general).
 Each site uses different DOM. Open DevTools on a lecture page, find the transcript element, copy its selector. Replace the line:
 
 ```js
-const segments = document.querySelectorAll('ytd-transcript-segment-renderer');
+const segments = document.querySelectorAll('transcript-segment-view-model, ytd-transcript-segment-renderer');
 ```
 
-With your site's equivalent. Then update the inner `.segment-text` selector to match the per-line element.
+With your site's equivalent. Then update the inner `.ytAttributedStringHost, .segment-text` selector to match the per-line element.
+
+> **Tip:** sites rename DOM elements over time (YouTube did so in 2026 — `ytd-transcript-segment-renderer` → `transcript-segment-view-model`). When that happens, prefer extending the selector with a fallback (`new-name, old-name`) instead of replacing — the script keeps working on stragglers running cached page versions.
 
 ### 4. Detect the active phrase
 Most sites highlight the currently-spoken phrase with a CSS class. Find it and update:

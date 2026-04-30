@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         cowatch — YouTube Transcript Capture
 // @namespace    https://github.com/DimmMak/cowatch
-// @version      1.0.0
-// @description  Captures live YouTube lecture transcripts to localStorage so the /cowatch skill can read them on demand. Requires the user to open the transcript panel manually first time.
+// @version      1.2.0
+// @description  Captures live YouTube lecture transcripts to localStorage so the /cowatch skill can read them on demand. v1.2: auto-click "Show transcript" once per video. v1.1: support YT's 2026 selector (transcript-segment-view-model + .ytAttributedStringHost).
 // @author       Danny (DimmMak)
 // @match        https://www.youtube.com/watch*
 // @grant        none
@@ -61,29 +61,34 @@
     }
 
     function captureTranscript() {
-        // YouTube transcript panel uses ytd-transcript-segment-renderer elements.
-        // The user must open the transcript panel manually first time
-        // ("..." menu under video → "Show transcript").
-        const segments = document.querySelectorAll('ytd-transcript-segment-renderer');
+        // YouTube transcript DOM (2026): segments are <transcript-segment-view-model>,
+        // text lives in a <span class="ytAttributedStringHost"> child.
+        // Legacy selector ytd-transcript-segment-renderer kept as fallback.
+        // User must open the transcript panel first: scroll to description → "Show transcript".
+        const segments = document.querySelectorAll(
+            'transcript-segment-view-model, ytd-transcript-segment-renderer'
+        );
         if (!segments.length) {
-            indicator.textContent = '📺 Cowatch: open transcript panel ("..." → Show transcript)';
+            indicator.textContent = '📺 Cowatch: open transcript panel (description → Show transcript)';
             indicator.style.color = '#fbbf24';
             return;
         }
 
+        const extractText = s => {
+            const span = s.querySelector('.ytAttributedStringHost, .segment-text, yt-formatted-string.segment-text');
+            return span ? span.textContent.trim() : '';
+        };
+
         const fullText = Array.from(segments)
-            .map(s => {
-                const textEl = s.querySelector('.segment-text, yt-formatted-string.segment-text');
-                return textEl ? textEl.textContent.trim() : '';
-            })
+            .map(extractText)
             .filter(Boolean)
             .join(' ');
 
-        // Active segment — YouTube highlights the current one with the .active class.
-        const active = document.querySelector('ytd-transcript-segment-renderer.active, ytd-transcript-segment-renderer[active]');
-        const activeText = active
-            ? (active.querySelector('.segment-text, yt-formatted-string.segment-text')?.textContent.trim() || '')
-            : '';
+        // Active segment — try multiple class/attr conventions across YT versions.
+        const active = document.querySelector(
+            'transcript-segment-view-model.active, transcript-segment-view-model[active], ytd-transcript-segment-renderer.active, ytd-transcript-segment-renderer[active]'
+        );
+        const activeText = active ? extractText(active) : '';
 
         const meta = {
             url: location.href,
@@ -102,10 +107,34 @@
         indicator.style.color = '#4ade80';
     }
 
+    // ─── Auto-open transcript (once per video URL) ────────────────
+    // Tracks which video URLs we've already attempted, so closing the panel
+    // doesn't trigger a re-open battle. SPA nav to a new video = new attempt.
+    const autoOpenAttempted = new Set();
+
+    function autoOpenTranscript() {
+        const url = location.href;
+        if (autoOpenAttempted.has(url)) return;
+        // Already open?
+        if (document.querySelectorAll('transcript-segment-view-model, ytd-transcript-segment-renderer').length) {
+            autoOpenAttempted.add(url);
+            return;
+        }
+        const btn = document.querySelector('ytd-video-description-transcript-section-renderer button');
+        if (btn && /show transcript/i.test(btn.textContent || '')) {
+            btn.click();
+            autoOpenAttempted.add(url);
+            console.log('[Cowatch] Auto-clicked "Show transcript".');
+        }
+    }
+
     // ─── Start the loop ────────────────────────────────────────────
-    setInterval(captureTranscript, SAMPLE_INTERVAL_MS);
+    setInterval(() => {
+        autoOpenTranscript();
+        captureTranscript();
+    }, SAMPLE_INTERVAL_MS);
+    autoOpenTranscript();
     captureTranscript();
 
-    console.log('[Cowatch] YouTube userscript loaded. Sampling every 3s.');
-    console.log('[Cowatch] If transcript not detected, open the transcript panel: "..." menu → Show transcript');
+    console.log('[Cowatch] YouTube userscript v1.2 loaded. Sampling every 3s. Auto-open enabled.');
 })();

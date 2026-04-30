@@ -1,5 +1,34 @@
 # 📜 cowatch Changelog
 
+## v1.2.0 — 2026-04-30 — YouTube auto-open
+
+**`cowatch-youtube.user.js` v1.2.0** — auto-clicks the "Show transcript" button so the user no longer has to do it manually.
+
+- Detects when the transcript panel isn't open and clicks `ytd-video-description-transcript-section-renderer button` if its text matches `/show transcript/i`
+- One-shot per video URL — closing the panel intentionally won't trigger a re-open battle
+- SPA navigation to a new video resets the auto-open flag for the new URL
+- Same UX as Coursera now: load page → wait ~6s → click green indicator → transcript on clipboard
+
+---
+
+## v1.1.0 — 2026-04-30 — YouTube 2026 selector fix
+
+**`cowatch-youtube.user.js` v1.1.0** — patched after YouTube renamed the transcript DOM elements.
+
+- Container selector: `ytd-transcript-segment-renderer` → `transcript-segment-view-model`
+- Inner text selector: `.segment-text, yt-formatted-string.segment-text` → `.ytAttributedStringHost`
+- Old selectors retained as fallback so the script works on both old and new YT layouts
+- Discovered live on the user's video — selectors verified by Chrome MCP probe inside the running tab (273 segments, 35,948 chars captured cleanly)
+
+### How we found it
+1. Indicator stayed yellow ("open transcript panel") even with the panel visibly open
+2. Probed the live page DOM via Chrome MCP `javascript_tool`
+3. Found `transcript-segment-view-model` was the new wrapper for elements containing `MM:SS` timestamps
+4. Inspected the inner structure — the actual line text lives in a `<span class="ytAttributedStringHost">`
+5. Patched, re-served via local HTTP, Tampermonkey detected the version bump and offered "Update"
+
+---
+
 ## v0.2.0 — 2026-04-18
 
 **World-Class Overhaul shipped.** Part of the fleet-wide upgrade to tree+plugin+unix architecture.
