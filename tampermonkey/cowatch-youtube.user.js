@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         cowatch — YouTube Transcript Capture
 // @namespace    https://github.com/DimmMak/cowatch
-// @version      1.2.0
-// @description  Captures live YouTube lecture transcripts to localStorage so the /cowatch skill can read them on demand. v1.2: auto-click "Show transcript" once per video. v1.1: support YT's 2026 selector (transcript-segment-view-model + .ytAttributedStringHost).
+// @version      1.3.0
+// @description  DISABLED — cowatch removed from YouTube by user request.
 // @author       Danny (DimmMak)
 // @match        https://www.youtube.com/watch*
 // @grant        none
@@ -11,6 +11,7 @@
 
 (function() {
     'use strict';
+    return; // disabled
 
     const STORAGE_KEY = 'cowatch_transcript';
     const META_KEY = 'cowatch_meta';
